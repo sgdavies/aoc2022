@@ -28,4 +28,17 @@ NB. Add 58 to get AZ -> 27 52, with a crude filter
 NB. sum of values of common chars of split lines of boxes of input
 echo +/ priority common "0 lines
 
+NB. Part two
+common_of_three =. 3 : 0
+y0 =. >0{y
+y1 =. >1{y
+y2 =. >2{y
+NB. (~. nub of) (indicies in y0 of matches in y1) (# picked from y0)
+uniques01 =. ~. (y0 e. y1) # y0
+~. (y2 e. uniques01) # y2
+)
+
+NB. Split lines into a table of (len/3) rows by 3 columns, then calculate
+echo +/ priority common_of_three "1 ((($lines) %3), 3) $ lines
+
 exit 0
