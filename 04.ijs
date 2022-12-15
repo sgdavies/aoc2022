@@ -9,18 +9,30 @@ NB. (ix{.y) ; ( (($y) - ix) }.y)
 (ix{.y) ; ( (ix+1) }.y)
 )
 
-contained =. 3 : 0
+ranges =. 3 : 0
 y =. >y
 pair =. ',' split_on_chr y
 l =. '-' split_on_chr 0{pair
 r =. '-' split_on_chr 1{pair
 l_range =. (".>0{l)}.i.(".>1{l)+1
 r_range =. (".>0{r)}.i.(".>1{r)+1
-maxlen =. >./ ($l_range),($r_range)
-maxlen = $~.l_range,r_range
+l_range ; r_range
 )
 
-NB. Part one
-echo +/ contained "0 lines
+contains =. 3 : 0
+l =. >0{y
+r =. >1{y
+maxlen =. >./ ($l),($r)
+maxlen = $~.l,r
+)
+
+overlaps =. 3 : 0
+l =. >0{y
+r =. >1{y
+-. (($l) + ($r)) = $~.l,r
+)
+
+echo +/ contains "1 ranges "0 lines NB. Part one
+echo +/ overlaps "1 ranges "0 lines NB. Part two
 
 exit 0
