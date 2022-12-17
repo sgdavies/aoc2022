@@ -74,7 +74,7 @@ print(explore('AA', to_open, 30, 0)) # PART ONE
 
 # PART TWO
 # currently takes ~6 minutes to run
-def explore(first: str, second: str, second_delay: int,  remaining: set, time_left: int, will_release: int):
+def explore2(first: str, second: str, second_delay: int,  remaining: set, time_left: int, will_release: int):
     # as before, but now with first=location of first worker, second=destination of second worker, 
     # second_delay = time until second worker has reached & finished opening the valve at 'second'
     if not remaining: return will_release
@@ -88,7 +88,7 @@ def explore(first: str, second: str, second_delay: int,  remaining: set, time_le
                 continue # nor Second
             else:
                 # worry: recursion without removing from 'remaining' - although time_left does reduce, so it's ok
-                attempt = explore(second, first, first_delay, remaining, time_left - second_delay, will_release)
+                attempt = explore2(second, first, first_delay, remaining, time_left - second_delay, will_release)
         else:
             new_remain = set(remaining); new_remain.remove(node)
             if first_delay <= second_delay:
@@ -103,17 +103,36 @@ def explore(first: str, second: str, second_delay: int,  remaining: set, time_le
                 new_second_delay = first_delay - second_delay
             
             firsts_contribution = (time_left - first_delay)*nodes[node].rate
-            attempt = explore(new_first,new_second,new_second_delay, new_remain, new_left, will_release + firsts_contribution)
+            attempt = explore2(new_first,new_second,new_second_delay, new_remain, new_left, will_release + firsts_contribution)
             if attempt > best: best = attempt
 
     return best
 
-print(explore('AA', 'AA', 0, to_open, 26, 0))
+#print(explore2('AA', 'AA', 0, to_open, 26, 0))
 
+# part two again - more efficient?
+# Try all combinations of splitting the to_open set and running explore() on each half
+# Requires many, many more iterations - but reduces the size of the set going into explore()
+# significantly.  This achieved an 8x speedup, even though we now need 2x16384 calls into
+# explore(), vs a single call to explore2() !
+import itertools
+best = 0
+lower = 1 # 8x speedup vs explore2() above
+          # however still requires searching (N-1), and multiple times
+          # with higher risk tolerance, can push this up - the optimal solution
+          # is likely when the to sets are balanced anyway.
+          # >>> [len(list(itertools.combinations(range(15), i))) for i in range(8)]
+          # [1, 15, 105, 455, 1365, 3003, 5005, 6435]
+          # Cutting the first few saves a lot of time (further 5x speedup on the full data
+          # if we start at lower=7), even though we have many fewer combinations at low numbers.
+for first_num in range(lower,1+int(len(to_open)/2)):
+    for first_share in itertools.combinations(to_open, first_num):
+        first_share = set(first_share)
+        second_share = set(to_open) - first_share
+        mine = explore('AA', first_share, 26, 0)
+        elephants = explore('AA', second_share, 26, 0)
+        attempt = mine + elephants
+        if attempt > best: best = attempt
 
-
-
-
-
-
+print(best)
 
