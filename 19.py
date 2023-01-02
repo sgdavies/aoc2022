@@ -16,7 +16,7 @@ builds = [[
           [0,0,0,0, None]
          ] for m in matches]
 
-def partonea(builds, resources, robots, minleft, best):
+def partone(builds, resources, robots, minleft, best):
     if minleft==0: return max(best, resources[3])
 
     for build in builds:
@@ -47,7 +47,7 @@ def partonea(builds, resources, robots, minleft, best):
             new_resources = [resources[i] + robots[i] - build[i] for i in range(4)]
             new_robots = list(robots)
             if build[4] is not None: new_robots[build[4]] += 1
-            attempt = partonea(builds, new_resources, new_robots, minleft-1, best)
+            attempt = partone(builds, new_resources, new_robots, minleft-1, best)
             if attempt > best: best = attempt
 
     return best
@@ -56,7 +56,13 @@ def partonea(builds, resources, robots, minleft, best):
 total = 0
 for i, build in enumerate(builds):
     n=i+1
-    ans = partonea(build, [0,0,0,0], [1,0,0,0], 24, 0)
+    ans = partone(build, [0,0,0,0], [1,0,0,0], 24, 0)
     val = n*ans
     total += val
 print(total)
+
+parttwo = 1
+for i in range(3):
+    parttwo *= partone(builds[i], [0,0,0,0], [1,0,0,0], 32, 0)
+
+print(parttwo)
